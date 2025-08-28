@@ -7,9 +7,13 @@ environment:
   sdk: ^3.8.0
 
 dependencies:
+  analyzer: ^8.1.1
   args: ^2.7.0
   cli_completion: ^0.5.1
+  code_builder: ^4.10.1
+  dart_style: ^3.1.2
   mason_logger: ^0.3.3
+  path: ^1.9.1
   pub_updater: ^0.5.0
 
 dev_dependencies:

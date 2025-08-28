@@ -37,8 +37,7 @@ class AnalyzerExplorationCommandRunner extends CompletionCommandRunner<int> {
       );
 
     // Add sub commands
-    addCommand(SampleCommand(logger: _logger));
-    addCommand(UpdateCommand(logger: _logger, pubUpdater: _pubUpdater));
+    addCommand(GenerateCommand(logger: _logger));
   }
 
   @override
@@ -111,11 +110,6 @@ class AnalyzerExplorationCommandRunner extends CompletionCommandRunner<int> {
       exitCode = ExitCode.success.code;
     } else {
       exitCode = await super.runCommand(topLevelResults);
-    }
-
-    // Check for updates
-    if (topLevelResults.command?.name != UpdateCommand.commandName) {
-      await _checkForUpdates();
     }
 
     return exitCode;

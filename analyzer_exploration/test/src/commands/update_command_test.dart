@@ -56,11 +56,6 @@ void main() {
       when(() => logger.progress(any())).thenReturn(progress);
     });
 
-    test('can be instantiated without a pub updater', () {
-      final command = UpdateCommand(logger: logger);
-      expect(command, isNotNull);
-    });
-
     test('handles pub latest version query errors', () async {
       when(
         () => pubUpdater.getLatestVersion(any()),
