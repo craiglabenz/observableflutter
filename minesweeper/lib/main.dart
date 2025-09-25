@@ -102,7 +102,7 @@ class _GameBoardInnerState extends State<_GameBoardInner> {
               ...horizontalLines(),
               ...borderWidgets(),
               ...revealedSquares(),
-              ...drawMines(),
+              // ...drawMines(),
             ],
           ),
         );
@@ -112,8 +112,18 @@ class _GameBoardInnerState extends State<_GameBoardInner> {
 
   Iterable<Widget> revealedSquares() sync* {
     for (final coords in engine.revealedLocations) {
+      if (engine.mineLocations.contains(coords)) {
+        yield widget.builder
+            .getCoordsContentsPosition(coords)
+            .toWidget(
+              Center(
+                child: Text('M', style: TextStyle(color: Colors.red)),
+              ),
+            );
+        continue;
+      }
+
       final countOfMines = engine.adjacentMineCounts[coords]!;
-      print('$coords :: $countOfMines');
       if (countOfMines == 0) {
         yield widget.builder
             .getFillSquarePosition(coords)

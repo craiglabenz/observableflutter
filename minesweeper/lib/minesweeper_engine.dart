@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/widgets.dart';
 import 'package:minesweeper/game_board_builder.dart';
 
@@ -34,13 +32,40 @@ class MinesweeperEngine extends ChangeNotifier {
     mineLocations.addAll(coordsToHoldMines.sublist(0, numMines));
 
     for (final coords in allCoords) {
-      adjacentMineCounts[coords] = getAdjacentMines(coords);
+      adjacentMineCounts[coords] = _getAdjacentMines(coords);
     }
   }
 
   void clickedCoordinates(Coords coords) {
+    if (revealedLocations.contains(coords)) {
+      return;
+    }
     revealedLocations.add(coords);
+
+    if (adjacentMineCounts[coords] == 0) {
+      _revealAdjacent(coords);
+    }
+
     notifyListeners();
+  }
+
+  void _revealAdjacent(Coords coords) {
+    final queue = <Coords>[..._getAdjacentCoords(coords)];
+    final visited = <Coords>{coords};
+
+    while (queue.isNotEmpty) {
+      final current = queue.removeAt(0);
+      if (visited.contains(current) || revealedLocations.contains(current)) {
+        continue;
+      }
+
+      visited.add(current);
+      revealedLocations.add(current);
+
+      if (adjacentMineCounts[current] == 0) {
+        queue.addAll(_getAdjacentCoords(current));
+      }
+    }
   }
 
   Iterable<Coords> get allCoords sync* {
@@ -51,34 +76,33 @@ class MinesweeperEngine extends ChangeNotifier {
     }
   }
 
-  int getAdjacentMines(Coords coords) {
+  int _getAdjacentMines(Coords coords) {
     int adjacentMines = 0;
-    for (int rowDelta in rowAdjacencyIterator) {
-      for (int columnDelta in columnAdjacencyIterator) {
-        final adjacentCoords = Coords(
-          row: coords.row + rowDelta,
-          column: coords.column + columnDelta,
-        );
-        if (coords == adjacentCoords) {
-          continue;
-        }
-        if (mineLocations.contains(adjacentCoords)) {
-          adjacentMines++;
-        }
+    for (final adjacentCoords in _getAdjacentCoords(coords)) {
+      if (mineLocations.contains(adjacentCoords)) {
+        adjacentMines++;
       }
     }
     return adjacentMines;
   }
 
-  Iterable<int> get rowAdjacencyIterator sync* {
-    yield -1;
-    yield 0;
-    yield 1;
-  }
+  Iterable<Coords> _getAdjacentCoords(Coords coords) sync* {
+    for (int rowDelta = -1; rowDelta <= 1; rowDelta++) {
+      for (int columnDelta = -1; columnDelta <= 1; columnDelta++) {
+        if (rowDelta == 0 && columnDelta == 0) {
+          continue;
+        }
 
-  Iterable<int> get columnAdjacencyIterator sync* {
-    yield -1;
-    yield 0;
-    yield 1;
+        final adjacentRow = coords.row + rowDelta;
+        final adjacentColumn = coords.column + columnDelta;
+
+        if (adjacentRow >= 0 &&
+            adjacentRow < rows &&
+            adjacentColumn >= 0 &&
+            adjacentColumn < columns) {
+          yield Coords(row: adjacentRow, column: adjacentColumn);
+        }
+      }
+    }
   }
 }
