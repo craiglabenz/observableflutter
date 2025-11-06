@@ -15,7 +15,7 @@ dependencies:
   go_router: ^16.0.0
   http: ^1.4.0
   path_provider: ^2.1.5
-  shadcn_flutter: ^0.0.37
+  shadcn_flutter: ^0.0.40
   shared_preferences: ^2.5.3
 
 dev_dependencies:
@@ -27,3 +27,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  config:
+    enable-swift-package-manager: false

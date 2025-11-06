@@ -1,8 +1,6 @@
 // A widget that displays a message in a chat bubble with a tail.
 import 'package:app/screens/chat/chat.dart';
-import 'package:app/screens/chat/data/youtube_comment_stream.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 class ChatMessageWidget extends StatelessWidget {
   const ChatMessageWidget(this.message, {required this.isSelected, super.key});

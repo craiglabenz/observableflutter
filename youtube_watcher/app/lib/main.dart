@@ -16,7 +16,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ShadcnApp.router(
       theme: ThemeData(
-        colorScheme: ColorSchemes.darkGreen(),
+        colorScheme: ColorSchemes.darkGreen,
         radius: 0.5,
       ),
       routerConfig: GetIt.I<GoRouter>(),

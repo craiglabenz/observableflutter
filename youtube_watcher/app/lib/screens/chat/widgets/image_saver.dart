@@ -83,7 +83,6 @@ class _ImageSaverState extends State<ImageSaver> {
       Uint8List pngBytes = byteData.buffer.asUint8List();
 
       // 5. Get the directory to save the image
-
       final file = File(imagePath);
 
       // 6. Write the image data to the file

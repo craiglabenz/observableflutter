@@ -1,27 +1,36 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:app/screens/values_input/values_repository.dart';
+import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
-import '../../../api_key.dart';
 
 class YouTubeCommentStream {
-  YouTubeCommentStream() : _controller = StreamController<ChatMessage>();
+  YouTubeCommentStream()
+    : _controller = StreamController<ChatMessage>(),
+      _valuesRepo = GetIt.I<ValuesRepository>();
+
+  final ValuesRepository _valuesRepo;
 
   void initialize() {
-    _getLiveChatId(videoId).then(
-      (String? liveChatId) {
-        if (liveChatId != null) {
-          Timer.periodic(const Duration(seconds: 5), (timer) async {
-            await _getChatMessages(liveChatId);
-          });
-        }
-      },
-    );
+    if (_valuesRepo.videoId != null) {
+      _getLiveChatId(_valuesRepo.videoId!).then(
+        (String? liveChatId) {
+          if (liveChatId != null) {
+            Timer.periodic(const Duration(seconds: 5), (timer) async {
+              await _getChatMessages(liveChatId);
+            });
+          }
+        },
+      );
+    } else {
+      print('No videoId in the repo');
+    }
   }
 
   /// Retrieves the liveChatId for a given video ID.
   Future<String?> _getLiveChatId(String videoId) async {
     final url = Uri.parse(
-      '$youtubeApiBaseUrl/videos?part=liveStreamingDetails&id=$videoId&key=$apiKey',
+      '$youtubeApiBaseUrl/videos?part=liveStreamingDetails&id=$videoId&key=${_valuesRepo.apiKey}',
     );
     final response = await http.get(url);
 
@@ -37,8 +46,9 @@ class YouTubeCommentStream {
   /// Fetches and prints new chat messages for the given liveChatId.
   Future<void> _getChatMessages(String liveChatId) async {
     final url = Uri.parse(
-      '$youtubeApiBaseUrl/liveChat/messages?liveChatId=$liveChatId&part=snippet,authorDetails&key=$apiKey',
+      '$youtubeApiBaseUrl/liveChat/messages?liveChatId=$liveChatId&part=snippet,authorDetails&key=${_valuesRepo.apiKey}',
     );
+
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -50,7 +60,6 @@ class YouTubeCommentStream {
             final author = item['authorDetails']['displayName'];
             final profileImage = item['authorDetails']['profileImageUrl'];
             final message = item['snippet']['displayMessage'];
-            // print('$author: $message :: $profileImage');
             final chatMessage = ChatMessage(
               id: messageId,
               username: author,
@@ -67,9 +76,6 @@ class YouTubeCommentStream {
       print('Failed to fetch chat messages: ${response.body}');
     }
   }
-
-  /// This is the YouTube Id from the Url.
-  static const videoId = 'pK2itkQgMfc';
 
   final StreamController<ChatMessage> _controller;
 
