@@ -1,0 +1,7 @@
+server:
+  host: "0.0.0.0"
+  port: 9000
+
+  proxy:
+    - target: "http://localhost:8080/api" # Base URL <string> of your backend
+      prefix: "/api/" # Path <string>

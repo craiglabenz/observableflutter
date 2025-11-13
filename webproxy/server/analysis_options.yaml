@@ -1,1 +1,4 @@
 include: package:dart_frog_lint/recommended.yaml
+
+formatter:
+  trailing_commas: preserve
